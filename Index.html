@@ -1,0 +1,421 @@
+
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrepAI - AI Interview & Aptitude Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide-react@0.378.0/dist/umd/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0f; /* Near-black background */
+            color: #e0e0e0;
+        }
+        /* Custom scrollbar for a modern look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #718096;
+        }
+        
+        /* Glassmorphism Panel Style */
+        .glass-panel {
+            background: rgba(10, 10, 15, 0.4); /* Darker, less transparent */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px; /* 24px rounded cards */
+        }
+
+        .glass-panel-light {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Neon Gradient Text */
+        .text-gradient {
+            background: linear-gradient(to right, #3b82f6, #a855f7, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        
+        /* Primary CTA Button */
+        .btn-primary {
+            @apply px-6 py-3 font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-purple-500/40;
+        }
+        
+        /* Secondary Glass Button */
+        .btn-secondary {
+            @apply px-6 py-3 font-semibold text-white bg-white/10 rounded-full border border-white/20 backdrop-blur-sm transition-all duration-300 transform hover:scale-105 hover:bg-white/20;
+        }
+
+        /* Hide pages by default */
+        .app-page {
+            display: none;
+        }
+        
+        /* Background Gradient Blobs */
+        .gradient-blob {
+            position: absolute;
+            filter: blur(120px);
+            opacity: 0.2;
+            pointer-events: none;
+            border-radius: 50%;
+        }
+
+        /* Loading Spinner */
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 3px solid #FFF;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        .loader::after {
+            content: '';  
+            box-sizing: border-box;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 3px solid;
+            border-color: #a855f7 transparent;
+        }
+        
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-x-hidden">
+
+    <div class="gradient-blob top-[-20%] left-[-20%] w-[60vw] h-[60vw] bg-purple-600 animate-pulse"></div>
+    <div class="gradient-blob bottom-[-20%] right-[-20%] w-[50vw] h-[50vw] bg-blue-500 animate-pulse delay-2000"></div>
+
+    <nav id="main-nav" class="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 transition-all duration-300">
+        <div class="flex items-center justify-between px-6 py-3 bg-black/30 backdrop-blur-lg rounded-2xl border border-white/10 shadow-lg">
+            <a href="#" class="text-3xl font-bold text-white cursor-pointer" onclick="showPage('page-landing', 'public')">
+                <span class="text-gradient">PrepAI</span>
+            </a>
+
+            <div id="nav-public" class="hidden md:flex items-center space-x-6">
+                <a href="#features" class="text-gray-300 hover:text-white transition-colors">Features</a>
+                <a href="#pricing" class="text-gray-300 hover:text-white transition-colors">Pricing</a>
+                <a href="#faq" class="text-gray-300 hover:text-white transition-colors">FAQ</a>
+                <a href="#" class="text-gray-300 hover:text-white transition-colors" onclick="showPage('page-contact')">Contact</a>
+            </div>
+
+            <div id="nav-app" class="hidden md:flex items-center space-x-6">
+                 <a href="#" class="text-gray-300 hover:text-white transition-colors" onclick="showPage('page-dashboard')">Dashboard</a>
+                 <a href="#" class="text-gray-300 hover:text-white transition-colors" onclick="showPage('page-interview')">AI Interview</a>
+                 <a href="#" class="text-gray-300 hover:text-white transition-colors" onclick="showPage('page-resume')">Resume</a>
+                 <a href="#" class="text-gray-300 hover:text-white transition-colors" onclick="showPage('page-aptitude')">Aptitude</a>
+                 <a href="#" class="text-gray-300 hover:text-white transition-colors" onclick="showPage('page-questions')">Questions</a>
+            </div>
+
+            <div id="nav-auth" class="flex items-center space-x-3">
+                <button class="text-gray-300 hover:text-white transition-colors" onclick="showPage('page-auth')">
+                    Log In
+                </button>
+                <button class="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg hover:shadow-purple-500/30 transition-shadow" onclick="showPage('page-auth')">
+                    Sign Up
+                </button>
+            </div>
+            
+            <div id="nav-user" class="hidden items-center space-x-4">
+                <div class="text-white flex items-center space-x-2">
+                    <i data-lucide="wallet" class="w-5 h-5 text-teal-400"></i>
+                    <span id="token-balance" class="font-medium">500</span>
+                    <span class="text-gray-400 text-sm">Tokens</span>
+                </div>
+                <div class="w-10 h-10 bg-purple-600 rounded-full cursor-pointer flex items-center justify-center font-bold text-white border-2 border-purple-400" onclick="showPage('page-settings')">
+                    U
+                </div>
+                <button class="text-gray-400 hover:text-white" onclick="showPage('page-landing', 'public')">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <div id="app-sidebar" class="fixed top-0 left-0 w-64 h-full glass-panel-light z-40 transform -translate-x-full transition-transform md:hidden">
+        </div>
+
+    <main id="main-content" class="relative z-10">
+
+        <div id="page-landing" class="app-page">
+            <section class="relative flex items-center justify-center w-full h-screen min-h-[700px] overflow-hidden px-4">
+                <div class="relative z-10 flex flex-col items-center max-w-4xl text-center">
+                    <h1 class="text-5xl font-extrabold text-white md:text-7xl">
+                        Land Your Dream Job with
+                        <br />
+                        <span class="text-gradient">
+                            AI-Powered Precision
+                        </span>
+                    </h1>
+                    <p class="mt-6 text-lg text-gray-300 md:text-xl max-w-2xl">
+                        Ace interviews, optimize your resume, and master aptitude tests. Our platform provides instant, personalized feedback to turn weaknesses into strengths.
+                    </p>
+                    <div class="mt-10 flex flex-col sm:flex-row gap-4">
+                        <button class="btn-primary" onclick="showPage('page-interview', 'app')">
+                            Start Mock Interview
+                        </button>
+                        <button class="btn-secondary" onclick="showPage('page-resume', 'app')">
+                            Analyze Resume
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="features" class="py-24 px-4">
+                <div class="container mx-auto max-w-6xl">
+                    <h2 class="text-4xl font-bold text-center text-white mb-4">The Ultimate Career Prep Toolkit</h2>
+                    <p class="text-lg text-center text-gray-400 mb-16 max-w-2xl mx-auto">
+                        All the tools you need to get hired, all in one place.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="glass-panel p-8 text-center transform transition-all duration-300 hover:scale-105 hover:border-purple-500/50">
+                            <i data-lucide="bot" class="w-16 h-16 mx-auto text-gradient"></i>
+                            <h3 class="text-2xl font-semibold text-white mt-6 mb-3">AI Mock Interview</h3>
+                            <p class="text-gray-400">Practice with a realistic AI avatar. Get instant feedback on your answers, tone, and body language.</p>
+                        </div>
+                        <div class="glass-panel p-8 text-center transform transition-all duration-300 hover:scale-105 hover:border-purple-500/50">
+                            <i data-lucide="file-text" class="w-16 h-16 mx-auto text-gradient"></i>
+                            <h3 class="text-2xl font-semibold text-white mt-6 mb-3">Resume Analyzer</h3>
+                            <p class="text-gray-400">Get an instant ATS score. Find missing keywords and get actionable advice to beat the screening bots.</p>
+                        </div>
+                        <div class="glass-panel p-8 text-center transform transition-all duration-300 hover:scale-105 hover:border-purple-500/50">
+                            <i data-lucide="puzzle" class="w-16 h-16 mx-auto text-gradient"></i>
+                            <h3 class="text-2xl font-semibold text-white mt-6 mb-3">Aptitude Practice</h3>
+                            <p class="text-gray-400">Sharpen your skills with company-wise mock tests and practice modules for any aptitude challenge.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="pricing" class="py-24 px-4">
+                <div class="container mx-auto max-w-5xl">
+                    <h2 class="text-4xl font-bold text-center text-white mb-4">Pay-as-you-go. No Subscriptions.</h2>
+                    <p class="text-lg text-center text-gray-400 mb-16 max-w-2xl mx-auto">
+                        Purchase AI Tokens and use them across all our features. Simple and transparent.
+                    </p>
+                    <div class="flex flex-wrap items-center justify-center gap-8">
+                        <div class="glass-panel p-8 w-full max-w-sm transform transition-all duration-300 hover:scale-105">
+                            <h3 class="text-2xl font-semibold text-white">Starter Pack</h3>
+                            <p class="mt-4 text-4xl font-bold text-white">
+                                ₹199
+                                <span class="text-base font-normal text-gray-400">/ 500 Tokens</span>
+                            </p>
+                            <ul class="mt-8 space-y-4">
+                                <li class="flex items-center space-x-3"><i data-lucide="check" class="w-5 h-5 text-teal-400"></i><span class="text-gray-300">~ 50 Interviews</span></li>
+                                <li class="flex items-center space-x-3"><i data-lucide="check" class="w-5 h-5 text-teal-400"></i><span class="text-gray-300">~ 100 Resume Scans</span></li>
+                                <li class="flex items-center space-x-3"><i data-lucide="check" class="w-5 h-5 text-teal-400"></i><span class="text-gray-300">+ 50 Bonus Tokens</span></li>
+                            </ul>
+                            <button class="w-full mt-10 btn-secondary" onclick="showPage('page-wallet', 'app')">Get Started</button>
+                        </div>
+                        
+                        <div class="glass-panel p-8 w-full max-w-sm transform transition-all duration-300 scale-105 border-2 border-purple-500 shadow-2xl shadow-purple-500/20">
+                             <div class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
+                                Most Popular
+                            </div>
+                            <h3 class="text-2xl font-semibold text-white">Pro Pack</h3>
+                            <p class="mt-4 text-4xl font-bold text-white">
+                                ₹499
+                                <span class="text-base font-normal text-gray-400">/ 1500 Tokens</span>
+                            </p>
+                            <ul class="mt-8 space-y-4">
+                                <li class="flex items-center space-x-3"><i data-lucide="check" class="w-5 h-5 text-teal-400"></i><span class="text-gray-300">~ 150 Interviews</span></li>
+                                <li class="flex items-center space-x-3"><i data-lucide="check" class="w-5 h-5 text-teal-400"></i><span class="text-gray-300">~ 300 Resume Scans</span></li>
+                                <li class="flex items-center space-x-3"><i data-lucide="check" class="w-5 h-5 text-teal-400"></i><span class="text-gray-300">+ 200 Bonus Tokens</span></li>
+                            </ul>
+                            <button class="w-full mt-10 btn-primary" onclick="showPage('page-wallet', 'app')">Get Started</button>
+                        </div>
+                        
+                         <div class="glass-panel p-8 w-full max-w-sm transform transition-all duration-300 hover:scale-105">
+                            <h3 class="text-2xl font-semibold text-white">Expert Pack</h3>
+                            <p class="mt-4 text-4xl font-bold text-white">
+                                ₹999
+                                <span class="text-base font-normal text-gray-400">/ 3000 Tokens</span>
+                            </p>
+                            <ul class="mt-8 space-y-4">
+                                <li class="flex items-center space-x-3"><i data-lucide="check" class="w-5 h-5 text-teal-400"></i><span class="text-gray-300">~ 300 Interviews</span></li>
+                                <li class="flex items-center space-x-3"><i data-lucide="check" class="w-5 h-5 text-teal-400"></i><span class="text-gray-300">~ 600 Resume Scans</span></li>
+                                <li class="flex items-center space-x-3"><i data-lucide="check" class="w-5 h-5 text-teal-400"></i><span class="text-gray-300">+ 500 Bonus Tokens</span></li>
+                            </ul>
+                            <button class="w-full mt-10 btn-secondary" onclick="showPage('page-wallet', 'app')">Get Started</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="faq" class="py-24 px-4">
+                <div class="container mx-auto max-w-3xl">
+                    <h2 class="text-4xl font-bold text-center text-white mb-12">Frequently Asked Questions</h2>
+                    <div class="space-y-6">
+                        <details class="glass-panel-light rounded-2xl p-6 cursor-pointer">
+                            <summary class="text-xl font-semibold text-white list-none flex justify-between items-center">
+                                How do AI Tokens work?
+                                <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
+                            </summary>
+                            <p class="text-gray-400 mt-4">
+                                AI Tokens are our pay-as-you-go currency. You buy a pack of tokens and then use them for different features. For example, one AI Interview might cost 10 tokens, and one Resume Analysis might cost 5 tokens. They never expire.
+                            </p>
+                        </details>
+                        <details class="glass-panel-light rounded-2xl p-6 cursor-pointer">
+                            <summary class="text-xl font-semibold text-white list-none flex justify-between items-center">
+                                How accurate is the interview feedback?
+                                <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
+                            </summary>
+                            <p class="text-gray-400 mt-4">
+                                Our AI is trained on millions of data points from real interviews and recruiter feedback. It analyzes your word choice, clarity, speaking pace, and even filler words to give you comprehensive, actionable feedback that closely mirrors what a human recruiter would look for.
+                            </p>
+                        </details>
+                        <details class="glass-panel-light rounded-2xl p-6 cursor-pointer">
+                            <summary class="text-xl font-semibold text-white list-none flex justify-between items-center">
+                                What is an ATS score?
+                                <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
+                            </summary>
+                            <p class="text-gray-400 mt-4">
+                                An Applicant Tracking System (ATS) is software used by over 90% of large companies to filter resumes. Our analyzer simulates this by scoring your resume based on keywords, formatting, and relevance to a job description, helping you ensure your resume gets seen by a human.
+                            </p>
+                        </details>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <div id="page-auth" class="app-page">
+            </div>
+        
+        <div id="page-dashboard" class="app-page">
+            </div>
+
+        <div id="page-interview" class="app-page">
+            </div>
+        
+        <div id="page-resume" class="app-page">
+            </div>
+        
+        <div id="page-aptitude" class="app-page">
+            </div>
+        
+        <div id="page-questions" class="app-page">
+            </div>
+        
+        <div id="page-settings" class="app-page">
+            </div>
+
+        <div id="page-wallet" class="app-page">
+            </div>
+        
+        <div id="page-contact" class="app-page">
+            </div>
+
+
+    </main>
+    
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Simple single-page app (SPA) routing
+        let currentPage = 'page-landing';
+        let currentNav = 'public';
+
+        function showPage(pageId, navType = 'app') {
+            // Hide all pages
+            document.querySelectorAll('.app-page').forEach(page => {
+                page.style.display = 'none';
+            });
+            
+            // Show the target page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.style.display = 'block';
+                currentPage = pageId;
+            } else {
+                // Fallback to landing if page not found
+                document.getElementById('page-landing').style.display = 'block';
+                currentPage = 'page-landing';
+                navType = 'public'; // Force public nav
+            }
+            
+            // Update navigation
+            updateNav(navType);
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function updateNav(navType) {
+            currentNav = navType;
+            if (navType === 'public') {
+                // Show public links and auth buttons
+                document.getElementById('nav-public').style.display = 'flex';
+                document.getElementById('nav-auth').style.display = 'flex';
+                // Hide app links and user menu
+                document.getElementById('nav-app').style.display = 'none';
+                document.getElementById('nav-user').style.display = 'none';
+                // Ensure nav is full-width for public view
+                document.getElementById('main-nav').classList.add('max-w-7xl');
+                document.getElementById('main-nav').classList.remove('max-w-full');
+
+            } else { // 'app' mode
+                // Hide public links and auth buttons
+                document.getElementById('nav-public').style.display = 'none';
+                document.getElementById('nav-auth').style.display = 'none';
+                // Show app links and user menu
+                document.getElementById('nav-app').style.display = 'flex';
+                document.getElementById('nav-user').style.display = 'flex';
+                // Make nav full-width for app view (optional, but good for focus)
+                document.getElementById('main-nav').classList.remove('max-w-7xl');
+                document.getElementById('main-nav').classList.add('max-w-full');
+            }
+        }
+        
+        // Handle FAQ accordion arrows
+        document.querySelectorAll('details').forEach(detail => {
+            detail.addEventListener('toggle', event => {
+                const icon = event.target.querySelector('i[data-lucide="chevron-down"]');
+                if (event.target.open) {
+                    icon.style.transform = 'rotate(180deg)';
+                } else {
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            });
+        });
+
+        // Show the initial page on load
+        showPage('page-landing', 'public');
+        
+    </script>
+</body>
+</html>
